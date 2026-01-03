@@ -7,7 +7,7 @@ import CompanyRoutes from './routes/companyRoutes.js'
 import CustomerRoutes from './routes/customerRoutes.js'
 import AuthRoutes from './routes/authRoutes.js'
 import { Authorization, AuthorizationRole, decodeToken } from "./utils/authorization.js";
-import QuatationRpotes from './routes/quatationRoutes.js'
+import quotationRoutes from './routes/quotationRoutes.js'
 import SurveyRoutes from './routes/surveyRoutes.js'
 import PackingRoutes from './routes/packingRoutes.js'
 const app = express()
@@ -41,7 +41,7 @@ app.use('/api/auth',AuthRoutes)
 app.use('/app-me',decodeToken)
 
 // admin 
-app.use('/api/quatation',Authorization,AuthorizationRole('admin'),QuatationRpotes)
+app.use('/api/quotation',Authorization,AuthorizationRole('admin'),quotationRoutes)
 app.use('/api/survey',Authorization,AuthorizationRole('admin'),SurveyRoutes)
 app.use('/api/packing',Authorization,AuthorizationRole('admin'),PackingRoutes)
 

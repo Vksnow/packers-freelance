@@ -13,67 +13,45 @@ export const Validator = (req, res, next) => {
   }
 }
 
-export const QuatationValidation = [
-  body("data.quatation_num").notEmpty().withMessage("Quotation number is required"),
-  body("data.moving_type").trim().notEmpty().withMessage("Moving type is required"),
-  body("data.qt_date").notEmpty().withMessage("Quotation date is required").isISO8601().withMessage("Invalid date format"),
-  body("data.packing_date").notEmpty().withMessage("Packing date is required").isISO8601().withMessage("Invalid date format"),
-  body("data.delevery_date").notEmpty().withMessage("Delivery date is required").isISO8601().withMessage("Invalid date format"),
-  body("data.load_type").trim().notEmpty().withMessage("Load type is required"),
-  body("data.mf_country").trim().notEmpty().withMessage("From country is required"),
-  body("data.mf_state").trim().notEmpty().withMessage("From state is required"),
-  body("data.mf_pincode").notEmpty().withMessage("From pincode is required").isInt().withMessage("Invalid pincode"),
-  body("data.mf_address").trim().notEmpty().withMessage("From address is required"),
-  body("data.mf_floor").trim().notEmpty().withMessage("From floor is required"),
-  body("data.mf_lift_status").notEmpty().withMessage("From lift status is required").isBoolean().withMessage("Lift status must be 0 or 1"),
-  body("data.mt_country").trim().notEmpty().withMessage("To country is required"),
-  body("data.mt_state").trim().notEmpty().withMessage("To state is required"),
-  body("data.mt_pincode").notEmpty().withMessage("To pincode is required").isInt().withMessage("Invalid pincode"),
-  body("data.mt_address").trim().notEmpty().withMessage("To address is required"),
-  body("data.mt_floor").trim().notEmpty().withMessage("To floor is required"),
-  body("data.mt_lift_status").notEmpty().isBoolean().withMessage("Lift status must be 0 or 1"),
-  body("data.shipping_cost").notEmpty().withMessage("Shipping cost is required").isFloat({ min: 0 }).withMessage("Invalid shipping cost"),
-  body("data.advance_paid").optional().isFloat({ min: 0 }),
-  body("data.packing_charge").notEmpty().withMessage("Packing charge is required").isFloat({ min: 0 }),
-  body("data.unpacking_charge").optional().isFloat({ min: 0 }),
-  body("data.loading_charge").optional().isFloat({ min: 0 }),
-  body("data.unloading_charge").optional().isFloat({ min: 0 }),
-  body("data.pac_material_charge").optional().isFloat({ min: 0 }),
-  body("data.storage_charge").optional().isFloat({ min: 0 }),
-  body("data.vechile_tpt").optional().isFloat({ min: 0 }),
-  body("data.miscellaneous_charge").optional().isFloat({ min: 0 }),
-  body("data.other_charge").optional().isFloat({ min: 0 }),
-  body("data.st_charge").optional().isFloat({ min: 0 }),
-  body("data.octroi_green_tax").optional().isFloat({ min: 0 }),
-  body("data.sur_charge_type").optional().trim(),
-  body("data.sur_charge_per").optional().isFloat({ min: 0 }),
-  body("data.quatation_status").trim().optional(),
-  body("data.gst").optional().isFloat({ min: 0 }),
-  body("data.gst_type").optional().trim(),
-  body("data.remarks").optional().trim(),
-  body("data.dicount").optional().isFloat({ min: 0 }),
+export const quotationValidation = [
+
+  body("data.quotation_num").notEmpty().withMessage("quotation number is required"),
+  body("data.customer_id").notEmpty().withMessage("Customer ID is required"),
+  body("data.qt_date").notEmpty().withMessage("Quotation date is required"),
+  body("data.packing_date").notEmpty().withMessage("Packing date is required"),
+  body("data.delivery_date").notEmpty().isString().withMessage("Delivery date is required"),
+  body("data.load_type").notEmpty().withMessage("Load type is required"),
+  body("data.shipping_cost").notEmpty().withMessage("Shipping cost is required").isFloat({ min: 0 }).withMessage("Shipping cost must be a positive number"),
+  body("data.advance_paid").optional({ checkFalsy: true }).isFloat({ min: 0 }).withMessage("Advance paid must be a positive number"),
+  body("data.packing_charge").optional({ checkFalsy: true }).isFloat({ min: 0 }).withMessage("Packing charge must be a positive number"),
+  body("data.unpacking_charge").optional({ checkFalsy: true }).isFloat({ min: 0 }).withMessage("Unpacking charge must be a positive number"),
+  body("data.loading_charge").optional({ checkFalsy: true }).isFloat({ min: 0 }).withMessage("Loading charge must be a positive number"),
+  body("data.unloading_charge").optional({ checkFalsy: true }).isFloat({ min: 0 }).withMessage("Unloading charge must be a positive number"),
+  body("data.pac_material_charge").optional({ checkFalsy: true }).isFloat({ min: 0 }).withMessage("Packing material charge must be a positive number"),
+  body("data.storage_charge").optional({ checkFalsy: true }).isFloat({ min: 0 }).withMessage("Storage charge must be a positive number"),
+  body("data.pcharge_type").optional().isInt({ min: 0 }).withMessage("Packing charge type must be a number"),
+  body("data.iunpcharge_type").optional().isInt({ min: 0 }).withMessage("Unpacking charge type must be a number"),
+  body("data.locharge_type").optional().isInt({ min: 0 }).withMessage("Loading charge type must be a number"),
+  body("data.stcharge_type").optional().isInt({ min: 0 }).withMessage("Storage charge type must be a number"),
+  body("data.unlocharge_type").optional().isInt({ min: 0 }).withMessage("Unloading charge type must be a number"),
+  body("data.matecharge_type").optional().isInt({ min: 0 }).withMessage("Material charge type must be a number"),
+  body("data.remarks").optional().trim().isLength({ max: 500 }).withMessage("Remarks must not exceed 500 characters"),
+  body("data.concerns").optional().trim().isLength({ max: 500 }).withMessage("Concerns must not exceed 500 characters"),
+  body("data.gst_show_amt").optional().isFloat({ min: 0 }).withMessage("GST amount must be a positive number"),
   body("data.insurance_type").optional().trim(),
-  body("data.insurance_charge").optional().isFloat({ min: 0 }),
-  body("data.insurance_gst").optional().isFloat({ min: 0 }),
-  body("data.insurance_value").optional().isFloat({ min: 0 }),
-  body("data.v_insurance_type").optional().trim(),
-  body("data.v_insurance_charge").optional().isFloat({ min: 0 }),
-  body("data.v_insurance_gst").optional().isFloat({ min: 0 }),
-  body("data.v_insurance_value").optional().isFloat({ min: 0 }),
-  body("data.other_easy_access").optional().trim(),
-  body("data.other_items").optional().trim(),
-  body("data.restriction_destination").optional().isBoolean().withMessage("Restriction destination must be boolean"),
-  body("data.concerns").optional().trim(),
-  body("data.item_details").optional().isArray({ min: 0 }).withMessage("Add minimum one item details")
+  body("data.other_easy_access").optional().isBoolean().withMessage("Other easy access must be true or false"),
+  body("data.balcony_access").optional().isBoolean().withMessage("Balcony access must be true or false"),
+  body("data.access_restriction").optional().isBoolean().withMessage("Access restriction must be true or false"),
+  body("data.qt_gst_mode").optional().isString().withMessage("GST mode must be a string")
 ];
 
 export const CustomerValidation = [
-  body("data.party_company").trim().optional(),
-  body("data.party_company_gst").trim().optional(),
+  body("data.create_type").trim().notEmpty().isString().withMessage("Create Type is Important"),
   body("data.party_name").trim().notEmpty().withMessage("Party name is required"),
   body("data.party_ph").trim().notEmpty().withMessage("Phone number is required").isLength({ min: 10, max: 15 }).withMessage("Invalid phone number"),
-  body("data.email").trim().optional().isEmail().withMessage("Invalid email address"),
-  body("data.shift_date").notEmpty().withMessage("Shift date is required").isISO8601().withMessage("Invalid date format"),
+  body("data.email").trim().optional({ checkFalsy: true }).isEmail().withMessage("Invalid email address"),
+  body("data.shift_date").notEmpty().withMessage("Shift date is required").isString().withMessage("Invalid date format"),
+  body("data.shift_time").notEmpty().withMessage("Shift date is required").isString().withMessage("Invalid date format"),
   body("data.mf_city").trim().notEmpty().withMessage("From city is required"),
   body("data.mt_city").trim().notEmpty().withMessage("To city is required"),
 ];
@@ -92,8 +70,14 @@ export const SurveyValidation = [
   body("data.survey_no").trim().notEmpty().withMessage("survey_no not found"),
   body("data.customer_id").trim().notEmpty().withMessage("customer_id not found")
 ]
+export const GetSurveyValidation = [
+  body("data.customer_id").trim().notEmpty().withMessage("customer_id not found")
+]
 export const PackingValidation = [
   body("data.item_details").notEmpty().isArray({ min: 0 }).withMessage("Add minimum one item details"),
   body("data.packing_no").trim().notEmpty().withMessage("packking_no not found"),
+  body("data.customer_id").trim().notEmpty().withMessage("customer_id not found")
+]
+export const GetPackingValidation = [
   body("data.customer_id").trim().notEmpty().withMessage("customer_id not found")
 ]
