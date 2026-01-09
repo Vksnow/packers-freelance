@@ -8,8 +8,12 @@ import CustomerRoutes from './routes/customerRoutes.js'
 import AuthRoutes from './routes/authRoutes.js'
 import { Authorization, AuthorizationRole, decodeToken } from "./utils/authorization.js";
 import quotationRoutes from './routes/quotationRoutes.js'
+import lrRoutes from './routes/lrRoutes.js'
+import receiptRoutes from './routes/receiptRoutes.js'
 import SurveyRoutes from './routes/surveyRoutes.js'
 import PackingRoutes from './routes/packingRoutes.js'
+import NocRoutes from './routes/nocRoutes.js'
+import PdfRoutes from './routes/pdfRoutes.js'
 const app = express()
 // const allowedOrigins = [""]
 // app.use(cors({
@@ -31,20 +35,25 @@ app.use(helmet({
   crossOriginResourcePolicy:{policy:"cross-origin"}
 }));
 
+app.use("/uploads", express.static("uploads/company"));
 
-app.use('/api/company',CompanyRoutes)
-app.use('/api/customer',Authorization,AuthorizationRole('admin'),CustomerRoutes)
 
 app.use('/api/auth',AuthRoutes)
-
-
 app.use('/app-me',decodeToken)
+
+app.use('/api/company',Authorization,AuthorizationRole('admin'),CompanyRoutes)
+app.use('/api/customer',Authorization,AuthorizationRole('admin'),CustomerRoutes)
+
 
 // admin 
 app.use('/api/quotation',Authorization,AuthorizationRole('admin'),quotationRoutes)
+app.use('/api/lrbill',Authorization,AuthorizationRole('admin'),lrRoutes)
+app.use('/api/receipt',Authorization,AuthorizationRole('admin'),receiptRoutes)
 app.use('/api/survey',Authorization,AuthorizationRole('admin'),SurveyRoutes)
 app.use('/api/packing',Authorization,AuthorizationRole('admin'),PackingRoutes)
+app.use('/api/noc',Authorization,AuthorizationRole('admin'),NocRoutes)
 
+app.use('/api/pdf',Authorization,AuthorizationRole('admin'),PdfRoutes)
 
 app.use(ErrorHandling)
 

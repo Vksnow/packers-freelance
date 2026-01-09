@@ -2,11 +2,16 @@ import jwt from 'jsonwebtoken'
 
 export const Authorization = (req, res, next) => {
   const authHeader = req.headers.authorization;
+
+  console.log(authHeader,'jjhj',process.env.JWT_TOKEN);
+  
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ status: false, message: "Authorization token missing" });
   }
   const token = authHeader?.split(" ")[1];
   jwt.verify(token, process.env.JWT_TOKEN, (err, user) => {
+    console.log(err);
+    
     if (err) return res.status(401).json({ status: false, message: "Invalid or expired token" });
     req.user = user;
     next();
@@ -23,7 +28,8 @@ export const AuthorizationRole = (...allowedRoles) => {
 }
 
 export const decodeToken = (req, res, next) => {
-  let token = req.cookies.token
+  let token = req?.cookies?.token
+  
   if (!token && req.headers?.authorization) {
     const authHeader = req.headers.authorization;
     if (authHeader.startsWith("Bearer ")) {
@@ -37,6 +43,8 @@ export const decodeToken = (req, res, next) => {
 
     res.status(200).json({decoded})
   } catch (error) {
+    console.log(error);
+    
     res.status(403).json({ message: "Invalid token", success: false });
 
   }
