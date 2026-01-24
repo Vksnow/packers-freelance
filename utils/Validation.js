@@ -317,3 +317,10 @@ export const GetNocReceiptValidation = [
   body("data.customer_id").trim().notEmpty().withMessage("customer_id not found"),
   body("data.noc_id").trim().notEmpty().withMessage("noc_date not found"),
 ]
+
+export const AddStaffValidation = [
+  body("data.staff_name").trim().notEmpty().withMessage("staff_name not found"),
+  body("data.staff_user_name").trim().notEmpty().withMessage("staff_user_name not found"),
+  body("data.staff_user_pass").trim().notEmpty().withMessage("staff_user_pass not found"),
+  body("data.role").trim().notEmpty().withMessage("role not found"),
+]

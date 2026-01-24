@@ -1,8 +1,8 @@
 import { v4 as UUID } from "uuid"
-import { UpdateCompanyService } from "../service/companyService.js";
+import { AddStaffService, UpdateCompanyService } from "../service/companyService.js";
 
 export const UpdateCompanyController = async (req, res, next) => {
-    const { data ={} } = req.body
+    const { data = {} } = req.body
     const logo = req.files?.logo?.[0];
     const signature = req.files?.signature?.[0];
     const qr_code_1 = req.files?.qr_code_1?.[0];
@@ -36,5 +36,20 @@ export const UpdateCompanyController = async (req, res, next) => {
     } catch (error) {
         console.log(error, 'hshksks');
         next()
+    }
+}
+
+export const AddStaffController = async (req, res, next) => {
+    try {
+        const { data } = req.body
+        const uuid = UUID().split('-')[0]
+        const staff_id = `staff_${uuid}`
+        const { company_id } = req.user
+
+        const staff_data = await AddStaffService(data, staff_id, company_id)
+        res.send(staff_data)
+    } catch (error) {
+        console.log(error, 'kjkdj');
+        next(error.message)
     }
 }
