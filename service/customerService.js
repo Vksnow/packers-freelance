@@ -108,10 +108,10 @@ export const GetCustomerByIdService = async (company_id, customer_id) => {
   }
 };
 
-export const updateCustomerService = async (company_id, fields, values, custoner_id) => {
+export const updateCustomerService = async (company_id, fields, values, customer_id) => {
   const setClause = fields.map((field, i) => `${field} = ? `)
-  const final_values = [...values, company_id, custoner_id]
-  const updateQuery = `update  customer set  ${setClause} where company_id =? and custoner_id =?`;
+  const final_values = [...values, company_id, customer_id]
+  const updateQuery = `update  customer set  ${setClause} where company_id =? and customer_id =?`;
 
   console.log(updateQuery);
   try {
@@ -126,3 +126,31 @@ export const updateCustomerService = async (company_id, fields, values, custoner
     return { message: "Internal Server Error", success: false, error: error }
   }
 }
+
+export const GetReminderCustomerService = async (company_id, limit = 5, page = 1, searchText = "") => {
+  const offset = (page - 1) * limit;
+  const countQuery = `
+    SELECT COUNT(*) AS totalRecords FROM customer
+    WHERE company_id = ? AND customer_status = ? AND LOWER(party_name) LIKE ? 
+  `;
+
+  const dataQuery = `
+    SELECT 
+    id ,customer_id, party_name, party_ph, email, mf_city, mt_city, shift_date, creation_type,
+    company_id, shift_time, advance_paid, advance_amount, remark, approval_type, reminder_time, created_at, approval_date, reminder_date 
+    FROM customer  WHERE company_id = ? AND customer_status = ? AND reminder_status = ? AND LOWER(party_name) LIKE ?  ORDER BY id DESC LIMIT ? OFFSET ?;
+  `;
+  const search = `%${searchText.toLowerCase()}%`;
+  try {
+    // 1️⃣ Get total records
+    const [[countResult]] = await pool.query(countQuery, [company_id, true, search]);
+    const totalRecords = countResult.totalRecords;
+    const totalPages = Math.ceil(totalRecords / limit);
+    // 2️⃣ Get paginated data
+    const [data] = await pool.query(dataQuery, [company_id, true,true, search, limit, offset]);
+
+    return { success: true, message: "Fetched Successfully", data: data, pagination: { currentPage: page, totalPages, totalRecords, limit } };
+  } catch (error) {
+    return { success: false, message: "Internal Server Error", error, };
+  }
+};

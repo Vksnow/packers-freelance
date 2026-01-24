@@ -1,5 +1,5 @@
 import { v4 as UUID } from "uuid"
-import { AddCustomerService, GetCustomerByIdService, GetCustomerService, updateCustomerService } from "../service/customerService.js"
+import { AddCustomerService, GetCustomerByIdService, GetCustomerService, GetReminderCustomerService, updateCustomerService } from "../service/customerService.js"
 
 export const AddCustomerController = async (req, res, next) => {
     try {
@@ -24,6 +24,23 @@ export const GetCustomerController = async (req, res, next) => {
         console.log(data,'jkjk');
         
         const customer_data = await GetCustomerService(company_id,data.limit,data.page,data.search_item)
+
+        console.log(customer_data, 'cisjn');
+
+        res.send(customer_data)
+    } catch (error) {
+        console.log(error, 'kjkdj');
+        next(error.message)
+    }
+}
+export const GetReminderCustomerController = async (req, res, next) => {
+    try {
+        const { company_id } = req.user
+        const {data}= req.body
+
+        console.log(data,'jkjk');
+        
+        const customer_data = await GetReminderCustomerService(company_id,data.limit,data.page,data.search_item)
 
         console.log(customer_data, 'cisjn');
 
@@ -60,10 +77,10 @@ export const updateCustomerController = async (req, res, next) => {
         const fields = Object.keys(data).filter(field => allowedField.includes(field))
         const values = fields.map(field => data[field])
         const { company_id } = req.user
-        const custoner_id = data.customer_id
+        const customer_id = data.customer_id
         console.log(company_id, fields, values);
 
-        const customer_data = await updateCustomerService(company_id, fields, values,custoner_id)
+        const customer_data = await updateCustomerService(company_id, fields, values,customer_id)
 
         res.send(customer_data)
     } catch (error) {
