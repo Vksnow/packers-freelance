@@ -6,9 +6,10 @@ export const AddCustomerController = async (req, res, next) => {
         const { data } = req.body
         const uuid = UUID().split('-')[0]
         const customer_id = `customer_${uuid}`
-        const { company_id } = req.user
-
-        const customer_data = await AddCustomerService(data, customer_id, data.create_type, company_id)
+        const { company_id,staff_id } = req.user
+        console.log(staff_id);
+        
+        const customer_data = await AddCustomerService(data, customer_id, data.create_type, company_id,staff_id)
         res.send(customer_data)
     } catch (error) {
         console.log(error, 'kjkdj');

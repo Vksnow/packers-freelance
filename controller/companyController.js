@@ -1,5 +1,5 @@
 import { v4 as UUID } from "uuid"
-import { AddStaffService, UpdateCompanyService } from "../service/companyService.js";
+import { AddStaffService, GetCompanyDashboardService, GetCompanyService, UpdateCompanyService } from "../service/companyService.js";
 
 export const UpdateCompanyController = async (req, res, next) => {
     const { data = {} } = req.body
@@ -9,11 +9,14 @@ export const UpdateCompanyController = async (req, res, next) => {
     const qr_code_2 = req.files?.qr_code_2?.[0];
 
     try {
-        const allowedField = [
-            "shift_date", "shift_time", "mf_country", "mf_state", "mf_pincode", "mf_address", "mf_floor", "mf_lift_status",
-            "mt_state", "mt_pincode", "mt_address", "mt_floor", "mt_lift_status", "party_company", "party_company_gst", "moving_type", "email",
-            "logo", "signature", "qr_code_1", "qr_code_2"
+        const allowedField = ["company_name", "user_email", "user_name",
+            "tagline", "website", "whatsapp", "contact1", "contact2", "gst", "pan",
+            "address", "state", "city", "jurisdiction",
+            "beneficiary_name", "bank_name", "account_no", "ifsc", "branch",
+            "upi_id_1", "upi_id_2", "upi_mobile", "qr_beneficiary_name",
+            "logo", "signature", "qr_code_1", "qr_code_2",
         ];
+
 
         const fields = Object.keys(data).filter(field => allowedField.includes(field))
         if (logo) fields.push("logo");
@@ -48,6 +51,28 @@ export const AddStaffController = async (req, res, next) => {
 
         const staff_data = await AddStaffService(data, staff_id, company_id)
         res.send(staff_data)
+    } catch (error) {
+        console.log(error, 'kjkdj');
+        next(error.message)
+    }
+}
+
+
+export const GetCompanyController = async (req, res, next) => {
+    try {
+        const { company_id } = req.user
+        const Company_data = await GetCompanyService(company_id,)
+        res.send(Company_data)
+    } catch (error) {
+        console.log(error, 'kjkdj');
+        next(error.message)
+    }
+}
+export const GetCompanyDashboardController = async (req, res, next) => {
+    try {
+        const { company_id } = req.user
+        const Company_data = await GetCompanyDashboardService(company_id,)
+        res.send(Company_data)
     } catch (error) {
         console.log(error, 'kjkdj');
         next(error.message)

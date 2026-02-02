@@ -18,8 +18,13 @@ export const Authorization = (req, res, next) => {
   });
 };
 
-export const AuthorizationRole = (...allowedRoles) => {
+export const AuthorizationRole = (allowedRoles) => {
+
+
+  
   return (req, res, next) => {
+    console.log(req.user.role,allowedRoles);
+    
     if (!allowedRoles.includes(req.user.role)) {
       return res.status(403).send({ messsage: "Restrict to access the Api", status: false })
     }

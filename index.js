@@ -41,8 +41,8 @@ app.use("/uploads", express.static("uploads/company"));
 app.use('/api/auth',AuthRoutes)
 app.use('/app-me',decodeToken)
 
-app.use('/api/company',Authorization,AuthorizationRole('admin'),CompanyRoutes)
-app.use('/api/customer',Authorization,AuthorizationRole('admin'),CustomerRoutes)
+app.use('/api/company',Authorization,AuthorizationRole(['admin']),CompanyRoutes)
+app.use('/api/customer',Authorization,AuthorizationRole(['admin','telecaller']),CustomerRoutes)
 
 
 // admin 

@@ -1,9 +1,9 @@
 import pool from "../config/dbConfig.js";
 
-export const AddCustomerService = async (data, customer_id, creation_type = "web", company_id) => {
+export const AddCustomerService = async (data, customer_id, creation_type = "web", company_id,staff_id) => {
   const insertQuery = `
-    INSERT INTO customer ( customer_id, party_name,party_ph, email, mf_city, mt_city,shift_date,creation_type,company_id,shift_time) 
-    SELECT ?,?,?,?,?,?,?,?,?,?
+    INSERT INTO customer ( customer_id, party_name,party_ph, email, mf_city, mt_city,shift_date,creation_type,company_id,shift_time,created_by) 
+    SELECT ?,?,?,?,?,?,?,?,?,?,?
     FROM dual
     WHERE
     NOT EXISTS (
@@ -14,7 +14,8 @@ export const AddCustomerService = async (data, customer_id, creation_type = "web
           AND customer_status = 1 )`;
   const values = [
     customer_id, data.party_name,
-    data.party_ph, data.email, data.mf_city, data.mt_city, data.shift_date, creation_type, company_id, data.shift_time, data.party_ph, company_id
+    data.party_ph, data.email, data.mf_city, data.mt_city, data.shift_date, creation_type, company_id, data.shift_time,staff_id, data.party_ph, company_id,
+
   ];
   try {
     const [inserted_data] = await pool.query(insertQuery, values)

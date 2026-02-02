@@ -6,7 +6,7 @@ const route = express.Router()
 route.post('/add-quotation',quotationValidation,Validator,AddQuotationController)
 route.get('/get-quotation-id',GetQuotationIDController)
 route.post('/get-quotation',GetQuotationValidation,Validator,GetQuotationController)
-route.post('/get-quotation',GetQuotationValidation,Validator,GetQuotationController)
+// route.post('/get-quotation',GetQuotationValidation,Validator,GetQuotationController)
 route.patch('/update-quotation',UpdateQuotationValidation,Validator,UpdateQuotationController)
 
 
