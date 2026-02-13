@@ -1,5 +1,5 @@
 import { v4 as UUID } from "uuid"
-import { AddStaffService, GetCompanyDashboardService, GetCompanyService, UpdateCompanyService } from "../service/companyService.js";
+import { AddStaffService, GetCompanyDashboardService, GetCompanyService, GetCompanyStaffService, UpdateCompanyService } from "../service/companyService.js";
 
 export const UpdateCompanyController = async (req, res, next) => {
     const { data = {} } = req.body
@@ -62,6 +62,17 @@ export const GetCompanyController = async (req, res, next) => {
     try {
         const { company_id } = req.user
         const Company_data = await GetCompanyService(company_id,)
+        res.send(Company_data)
+    } catch (error) {
+        console.log(error, 'kjkdj');
+        next(error.message)
+    }
+}
+
+export const GetCompanyStaffController = async (req, res, next) => {
+    try {
+        const { company_id } = req.user
+        const Company_data = await GetCompanyStaffService(company_id,)
         res.send(Company_data)
     } catch (error) {
         console.log(error, 'kjkdj');

@@ -46,14 +46,14 @@ app.use('/api/customer',Authorization,AuthorizationRole(['admin','telecaller']),
 
 
 // admin 
-app.use('/api/quotation',Authorization,AuthorizationRole('admin'),quotationRoutes)
-app.use('/api/lrbill',Authorization,AuthorizationRole('admin'),lrRoutes)
-app.use('/api/receipt',Authorization,AuthorizationRole('admin'),receiptRoutes)
-app.use('/api/survey',Authorization,AuthorizationRole('admin'),SurveyRoutes)
-app.use('/api/packing',Authorization,AuthorizationRole('admin'),PackingRoutes)
-app.use('/api/noc',Authorization,AuthorizationRole('admin'),NocRoutes)
+app.use('/api/quotation',Authorization,AuthorizationRole(['admin','telecaller']),quotationRoutes)
+app.use('/api/lrbill',Authorization,AuthorizationRole(['admin','telecaller']),lrRoutes)
+app.use('/api/receipt',Authorization,AuthorizationRole(['admin','telecaller']),receiptRoutes)
+app.use('/api/survey',Authorization,AuthorizationRole(['admin','telecaller']),SurveyRoutes)
+app.use('/api/packing',Authorization,AuthorizationRole(['admin','telecaller']),PackingRoutes)
+app.use('/api/noc',Authorization,AuthorizationRole(['admin','telecaller']),NocRoutes)
 
-app.use('/api/pdf',Authorization,AuthorizationRole('admin'),PdfRoutes)
+app.use('/api/pdf',Authorization,AuthorizationRole(['admin','telecaller']),PdfRoutes)   
 
 app.use(ErrorHandling)
 

@@ -1,5 +1,5 @@
 import express from "express";
-import { AddStaffController, GetCompanyController, GetCompanyDashboardController, UpdateCompanyController } from "../controller/companyController.js";
+import { AddStaffController, GetCompanyController, GetCompanyDashboardController, GetCompanyStaffController, UpdateCompanyController } from "../controller/companyController.js";
 import companyImgUpload from "../utils/imageHandling.js";
 import { AddStaffValidation, UpdateCompanyValidation, Validator } from "../utils/validation.js";
 
@@ -13,6 +13,8 @@ route.patch('/update-company',UpdateCompanyValidation,Validator,companyImgUpload
 
 route.post('/add-staff',AddStaffValidation,Validator,AddStaffController)
 route.get('/get-company-details',GetCompanyController)
+
+route.get('/get-company-staff',GetCompanyStaffController)
 
 route.get('/get-dashboard',GetCompanyDashboardController)
 export default route

@@ -1,6 +1,6 @@
 import pool from "../config/dbConfig.js";
 
-export const AddCustomerService = async (data, customer_id, creation_type = "web", company_id,staff_id) => {
+export const AddCustomerService = async (data, customer_id, creation_type = "web", company_id, staff_id) => {
   const insertQuery = `
     INSERT INTO customer ( customer_id, party_name,party_ph, email, mf_city, mt_city,shift_date,creation_type,company_id,shift_time,created_by) 
     SELECT ?,?,?,?,?,?,?,?,?,?,?
@@ -14,7 +14,7 @@ export const AddCustomerService = async (data, customer_id, creation_type = "web
           AND customer_status = 1 )`;
   const values = [
     customer_id, data.party_name,
-    data.party_ph, data.email, data.mf_city, data.mt_city, data.shift_date, creation_type, company_id, data.shift_time,staff_id, data.party_ph, company_id,
+    data.party_ph, data.email, data.mf_city, data.mt_city, data.shift_date, creation_type, company_id, data.shift_time, staff_id, data.party_ph, company_id,
 
   ];
   try {
@@ -29,33 +29,75 @@ export const AddCustomerService = async (data, customer_id, creation_type = "web
     return { message: "Internal Server Error", success: false, error: error }
   }
 }
-export const GetCustomerService = async (company_id, limit = 5, page = 1, searchText = "") => {
+export const GetCustomerService = async (
+  company_id,
+  limit = 5,
+  page = 1,
+  searchText = "",
+  staff_id
+) => {
+
   const offset = (page - 1) * limit;
-  const countQuery = `
-    SELECT COUNT(*) AS totalRecords FROM customer
-    WHERE company_id = ? AND customer_status = ? AND LOWER(party_name) LIKE ? 
+  const search = `%${searchText.toLowerCase()}%`;
+
+  let countQuery = `
+    SELECT COUNT(*) AS totalRecords 
+    FROM customer
+    WHERE company_id = ? 
+    AND customer_status = ?
+    AND LOWER(party_name) LIKE ?
   `;
 
-  const dataQuery = `
-    SELECT 
-    id ,customer_id, party_name, party_ph, email, mf_city, mt_city, shift_date, creation_type,
-    company_id, shift_time, advance_paid, advance_amount, remark, approval_type, reminder_time, created_at, approval_date, reminder_date 
-    FROM customer  WHERE company_id = ? AND customer_status = ? AND LOWER(party_name) LIKE ?  ORDER BY id DESC LIMIT ? OFFSET ?;
+  let dataQuery = `
+    SELECT *
+    FROM customer  
+    WHERE company_id = ? 
+    AND customer_status = ?
+    AND LOWER(party_name) LIKE ?
   `;
-  const search = `%${searchText.toLowerCase()}%`;
+
+  let countValues = [company_id, true, search];
+  let dataValues = [company_id, true, search];
+
+  if (staff_id) {
+    countQuery += ` AND created_by = ?`;
+    dataQuery += ` AND created_by = ?`;
+
+    countValues.push(staff_id);
+    dataValues.push(staff_id);
+  }
+
+  dataQuery += ` ORDER BY id DESC LIMIT ? OFFSET ?`;
+  dataValues.push(limit, offset);
+
   try {
-    // 1️⃣ Get total records
-    const [[countResult]] = await pool.query(countQuery, [company_id, true, search]);
+    const [[countResult]] = await pool.query(countQuery, countValues);
     const totalRecords = countResult.totalRecords;
     const totalPages = Math.ceil(totalRecords / limit);
-    // 2️⃣ Get paginated data
-    const [data] = await pool.query(dataQuery, [company_id, true, search, limit, offset]);
 
-    return { success: true, message: "Fetched Successfully", data: data, pagination: { currentPage: page, totalPages, totalRecords, limit } };
+    const [data] = await pool.query(dataQuery, dataValues);
+
+    return {
+      success: true,
+      message: "Fetched Successfully",
+      data,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalRecords,
+        limit
+      }
+    };
+
   } catch (error) {
-    return { success: false, message: "Internal Server Error", error, };
+    return {
+      success: false,
+      message: "Internal Server Error",
+      error
+    };
   }
 };
+
 export const GetCustomerByIdService = async (company_id, customer_id) => {
 
   const dataQuery = `
@@ -127,31 +169,73 @@ export const updateCustomerService = async (company_id, fields, values, customer
     return { message: "Internal Server Error", success: false, error: error }
   }
 }
+export const GetReminderCustomerService = async (company_id, limit = 5, page = 1, searchText = "", staff_id) => {
 
-export const GetReminderCustomerService = async (company_id, limit = 5, page = 1, searchText = "") => {
   const offset = (page - 1) * limit;
-  const countQuery = `
-    SELECT COUNT(*) AS totalRecords FROM customer
-    WHERE company_id = ? AND customer_status = ? AND LOWER(party_name) LIKE ? 
+  const search = `%${searchText.toLowerCase()}%`;
+
+  let countQuery = `
+    SELECT COUNT(*) AS totalRecords 
+    FROM customer
+    WHERE company_id = ?
+    AND customer_status = ?
+    AND reminder_status = ?
+    AND LOWER(party_name) LIKE ?
   `;
 
-  const dataQuery = `
+  let dataQuery = `
     SELECT 
-    id ,customer_id, party_name, party_ph, email, mf_city, mt_city, shift_date, creation_type,
-    company_id, shift_time, advance_paid, advance_amount, remark, approval_type, reminder_time, created_at, approval_date, reminder_date 
-    FROM customer  WHERE company_id = ? AND customer_status = ? AND reminder_status = ? AND LOWER(party_name) LIKE ?  ORDER BY id DESC LIMIT ? OFFSET ?;
+      id, customer_id, party_name, party_ph, email, 
+      mf_city, mt_city, shift_date, creation_type,
+      company_id, shift_time, advance_paid, advance_amount, 
+      remark, approval_type, reminder_time, created_at, 
+      approval_date, reminder_date
+    FROM customer  
+    WHERE company_id = ?
+    AND customer_status = ?
+    AND reminder_status = ?
+    AND LOWER(party_name) LIKE ?
   `;
-  const search = `%${searchText.toLowerCase()}%`;
+
+  let countValues = [company_id, true, true, search];
+  let dataValues = [company_id, true, true, search];
+
+  // ✅ Staff filter (same logic as before)
+  if (staff_id) {
+    countQuery += ` AND created_by = ?`;
+    dataQuery += ` AND created_by = ?`;
+
+    countValues.push(staff_id);
+    dataValues.push(staff_id);
+  }
+
+  dataQuery += ` ORDER BY id DESC LIMIT ? OFFSET ?`;
+  dataValues.push(limit, offset);
+
   try {
-    // 1️⃣ Get total records
-    const [[countResult]] = await pool.query(countQuery, [company_id, true, search]);
+    const [[countResult]] = await pool.query(countQuery, countValues);
     const totalRecords = countResult.totalRecords;
     const totalPages = Math.ceil(totalRecords / limit);
-    // 2️⃣ Get paginated data
-    const [data] = await pool.query(dataQuery, [company_id, true,true, search, limit, offset]);
 
-    return { success: true, message: "Fetched Successfully", data: data, pagination: { currentPage: page, totalPages, totalRecords, limit } };
+    const [data] = await pool.query(dataQuery, dataValues);
+
+    return {
+      success: true,
+      message: "Fetched Successfully",
+      data,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalRecords,
+        limit
+      }
+    };
+
   } catch (error) {
-    return { success: false, message: "Internal Server Error", error, };
+    return {
+      success: false,
+      message: "Internal Server Error",
+      error
+    };
   }
 };
