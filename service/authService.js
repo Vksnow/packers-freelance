@@ -5,7 +5,7 @@ configDotenv()
 
 export const AuthLoginService = async (data) => {
     try {
-        const getCompanyQuery = `select company_id,user_email,role,user_name,company_name,subcription,employee_count,created_employee from company where ph_num = ? `
+        const getCompanyQuery = `select company_id,user_email,role,user_name,company_name,employee_count,created_employee from company where ph_num = ? `
         let [company_data] = await pool.query(getCompanyQuery, [data.ph_num])
 
         if (company_data.length > 0) {

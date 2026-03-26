@@ -1,6 +1,7 @@
 import { v4 as UUID } from "uuid"
-import { AddStaffService, GetCompanyDashboardService, GetCompanyService, GetCompanyStaffService, UpdateCompanyService } from "../service/companyService.js";
-
+import { AddStaffService, CreateOrderOrderService, GetCompanyDashboardService, GetCompanyService, GetCompanyStaffService, UpdateCompanyService, VerifyOrderOrderService } from "../service/companyService.js";
+import { RazorPay } from "../utils/razorpay.js";
+import crypto from 'crypto'
 export const UpdateCompanyController = async (req, res, next) => {
     const { data = {} } = req.body
     const logo = req.files?.logo?.[0];
@@ -86,6 +87,41 @@ export const GetCompanyDashboardController = async (req, res, next) => {
         res.send(Company_data)
     } catch (error) {
         console.log(error, 'kjkdj');
+        next(error.message)
+    }
+}
+
+export const CreateOrderStaffController = async (req, res, next) => {
+    try {
+        const { data } = req.body
+        const { company_id } = req.user
+        const order = await RazorPay.orders.create({
+            amount: parseInt(data?.amount) * 100,
+            currency: "INR",
+            receipt: "Subscription"
+        })
+        const order_data = await CreateOrderOrderService(data, company_id, order)
+        res.send(order_data)
+    } catch (error) {
+        // console.log(error, 'kjkdj');
+        next(error.message)
+    }
+}
+
+export const VerifyOrderStaffController = async (req, res, next) => {
+    try {
+        const { data } = req.body
+        const { company_id } = req.user
+        const body = data.razorpay_order_id + "|" + data.razorpay_payment_id;
+    
+        const generated_signature = crypto
+            .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+            .update(body)
+            .digest("hex");
+        const order_data = await VerifyOrderOrderService(data, company_id, order)
+        res.send(order_data)
+    } catch (error) {
+        // console.log(error, 'kjkdj');
         next(error.message)
     }
 }

@@ -4,6 +4,7 @@ import cors from 'cors'
 import morgan from 'morgan';
 import { ErrorHandling } from "./utils/errorHandling.js";
 import CompanyRoutes from './routes/companyRoutes.js'
+import SubscriptionRoutes from './routes/subscriptionRoutes.js'
 import CustomerRoutes from './routes/customerRoutes.js'
 import AuthRoutes from './routes/authRoutes.js'
 import { Authorization, AuthorizationRole, decodeToken } from "./utils/authorization.js";
@@ -54,6 +55,12 @@ app.use('/api/packing',Authorization,AuthorizationRole(['admin','telecaller']),P
 app.use('/api/noc',Authorization,AuthorizationRole(['admin','telecaller']),NocRoutes)
 
 app.use('/api/pdf',Authorization,AuthorizationRole(['admin','telecaller']),PdfRoutes)   
+
+
+// super admin 
+
+app.use('/api/subscription',Authorization,AuthorizationRole(['super_admin']),SubscriptionRoutes)
+
 
 app.use(ErrorHandling)
 

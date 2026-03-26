@@ -156,7 +156,7 @@ export const UpdateCompanyValidation = [
   body("data.upi_id_2").optional().trim().notEmpty().withMessage("upi_id_2 cannot be empty"),
   body("data.upi_mobile").optional().trim().notEmpty().withMessage("upi_mobile cannot be empty"),
   body("data.qr_beneficiary_name").optional().trim().notEmpty().withMessage("qr_beneficiary_name cannot be empty"),
-  body("data.subcription").optional().isBoolean().withMessage("subcription must be a number"),
+  body("data.subscription").optional().isBoolean().withMessage("subscription must be a number"),
   body("data.address").optional().trim().notEmpty().withMessage("address cannot be empty"),
   body("data.employee_count").optional().isInt().withMessage("employee_count must be a number"),
   body("data.logo").optional().isBoolean().withMessage("created_employee must be a number"),
@@ -323,4 +323,13 @@ export const AddStaffValidation = [
   body("data.staff_user_name").trim().notEmpty().withMessage("staff_user_name not found"),
   body("data.staff_user_pass").trim().notEmpty().withMessage("staff_user_pass not found"),
   body("data.role").trim().notEmpty().withMessage("role not found"),
+]
+
+export const AddSubscriptionValidation = [
+  body("data.subscription_amount").notEmpty().withMessage("Add subscription_amount"),
+  body("data.supscription_type").trim().notEmpty().withMessage("supscription_type not found"),
+]
+
+export const UpdateSubscriptionValidation = [
+  body("data.subscription_id").notEmpty().withMessage("subscription_id not found"),
 ]

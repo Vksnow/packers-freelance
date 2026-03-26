@@ -89,7 +89,7 @@ export const GetCompanyStaffService = async (company_id) => {
 export const GetCompanyDashboardService = async (company_id) => {
   const quotationQuery = `
     SELECT 
-    c1.company_name,c1.user_name,c1.logo,subcription,
+    c1.company_name,c1.user_name,c1.logo,subscription,
     COUNT(DISTINCT c2.customer_id) AS customer_count,
     COUNT(DISTINCT q1.quotation_id) AS quotation_count
     FROM company AS c1
@@ -107,6 +107,42 @@ export const GetCompanyDashboardService = async (company_id) => {
   } catch (error) {
     console.log(error, 'errr');
 
+    if (error.code === "23505") return { message: "Duplicate Entry Not Accepted", success: false, error: error }
+    return { message: "Internal Server Error", success: false, error: error }
+  }
+}
+
+
+
+export const CreateOrderOrderService = async (data, company_id,order) => {
+
+  const insertQuery = `INSERT INTO subscription (order_id,company_id,amount,status,subscription_id ) values (?,?,?,?,?)`;
+  const values = [order.id,company_id,data.amount,order.status,data.subscription_id ];
+  try {
+    const [inserted_data] = await pool.query(insertQuery, values)
+    if (inserted_data.affectedRows === 0) {
+      return { success: false, message: "Already Staff On Active", data: inserted_data }
+    }   
+    return { success: true, message: "order created", data: order.id }
+  } catch (error) {
+    console.log(error, 'errr');
+    if (error.code === "23505") return { message: "Duplicate Entry Not Accepted", success: false, error: error }
+    return { message: "Internal Server Error", success: false, error: error }
+  }
+}
+
+export const VerifyOrderOrderService = async (data, company_id,order) => {
+
+  const insertQuery = `INSERT INTO subscription (order_id,company_id,amount,status,subscription_id ) values (?,?,?,?,?)`;
+  const values = [order.id,company_id,data.amount,order.status,data.subscription_id ];
+  try {
+    const [inserted_data] = await pool.query(insertQuery, values)
+    if (inserted_data.affectedRows === 0) {
+      return { success: false, message: "Already Staff On Active", data: inserted_data }
+    }   
+    return { success: true, message: "order created", data: order.id }
+  } catch (error) {
+    console.log(error, 'errr');
     if (error.code === "23505") return { message: "Duplicate Entry Not Accepted", success: false, error: error }
     return { message: "Internal Server Error", success: false, error: error }
   }
