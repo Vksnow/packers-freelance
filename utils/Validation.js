@@ -333,3 +333,12 @@ export const AddSubscriptionValidation = [
 export const UpdateSubscriptionValidation = [
   body("data.subscription_id").notEmpty().withMessage("subscription_id not found"),
 ]
+
+
+export const AddStaffPurchaseValidation = [
+  body("data.price").notEmpty().withMessage("Add price"),
+  body("data.staff_count").trim().notEmpty().withMessage("staff_count not found"),
+]
+export const UpdateStaffPurchaseValidation = [
+  body("data.purchase_id").notEmpty().withMessage("Add price")
+]

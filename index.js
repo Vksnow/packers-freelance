@@ -5,11 +5,13 @@ import morgan from 'morgan';
 import { ErrorHandling } from "./utils/errorHandling.js";
 import CompanyRoutes from './routes/companyRoutes.js'
 import SubscriptionRoutes from './routes/subscriptionRoutes.js'
+import PurchaseRoutes from './routes/purchaseRoutes.js'
 import CustomerRoutes from './routes/customerRoutes.js'
 import AuthRoutes from './routes/authRoutes.js'
 import { Authorization, AuthorizationRole, decodeToken } from "./utils/authorization.js";
 import quotationRoutes from './routes/quotationRoutes.js'
 import lrRoutes from './routes/lrRoutes.js'
+import InvoiceBillRoutes from './routes/invoiceRoutes.js'
 import receiptRoutes from './routes/receiptRoutes.js'
 import SurveyRoutes from './routes/surveyRoutes.js'
 import PackingRoutes from './routes/packingRoutes.js'
@@ -49,6 +51,7 @@ app.use('/api/customer',Authorization,AuthorizationRole(['admin','telecaller']),
 // admin 
 app.use('/api/quotation',Authorization,AuthorizationRole(['admin','telecaller']),quotationRoutes)
 app.use('/api/lrbill',Authorization,AuthorizationRole(['admin','telecaller']),lrRoutes)
+app.use('/api/invoicebill',Authorization,AuthorizationRole(['admin','telecaller']),InvoiceBillRoutes)
 app.use('/api/receipt',Authorization,AuthorizationRole(['admin','telecaller']),receiptRoutes)
 app.use('/api/survey',Authorization,AuthorizationRole(['admin','telecaller']),SurveyRoutes)
 app.use('/api/packing',Authorization,AuthorizationRole(['admin','telecaller']),PackingRoutes)
@@ -59,7 +62,8 @@ app.use('/api/pdf',Authorization,AuthorizationRole(['admin','telecaller']),PdfRo
 
 // super admin 
 
-app.use('/api/subscription',Authorization,AuthorizationRole(['super_admin']),SubscriptionRoutes)
+app.use('/api/subscription',Authorization,AuthorizationRole(['super_admin','admin']),SubscriptionRoutes)
+app.use('/api/purchase',Authorization,AuthorizationRole(['super_admin','admin']),PurchaseRoutes)
 
 
 app.use(ErrorHandling)

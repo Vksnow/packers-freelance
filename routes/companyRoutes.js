@@ -1,5 +1,5 @@
 import express from "express";
-import { AddStaffController, CreateOrderStaffController, GetCompanyController, GetCompanyDashboardController, GetCompanyStaffController, UpdateCompanyController, VerifyOrderStaffController } from "../controller/companyController.js";
+import { AddStaffController, BuyStaffOrderStaffController, CreateOrderStaffController, GetCompanyController, GetCompanyDashboardController, GetCompanyStaffController, UpdateCompanyController, VerifyOrderStaffController, VerifyPurchaseOrderStaffController } from "../controller/companyController.js";
 import companyImgUpload from "../utils/imageHandling.js";
 import { AddStaffValidation, UpdateCompanyValidation, Validator } from "../utils/validation.js";
 
@@ -21,4 +21,8 @@ route.get('/get-dashboard',GetCompanyDashboardController)
 
 route.post('/subscription-create-order',CreateOrderStaffController)
 route.post('/subscription-verify-order',VerifyOrderStaffController)
+
+route.post('/staff-purchase-create-order',BuyStaffOrderStaffController)
+route.post('/staff-purchase-verify-order',VerifyPurchaseOrderStaffController)
+
 export default route

@@ -4,7 +4,7 @@ configDotenv()
 
 
 export const AddSubscriptionService = async (data, subscription_id) => {
-  const insertQuery = `INSERT INTO subscription_plan (subscription_id,supscription_type,subscription_amount ) values (?,?,?)`;
+  const insertQuery = `INSERT INTO subscription_plan (subscription_id,supscription_type,subscription_amount,supscription_days ) values (?,?,?)`;
   const values = [subscription_id,data.supscription_type,data.subscription_amount ];
   try {
     const [inserted_data] = await pool.query(insertQuery, values)
@@ -21,9 +21,9 @@ export const AddSubscriptionService = async (data, subscription_id) => {
 }
 
 export const GetSubscriptionService = async () => {
-  const quotationQuery = `select  *  from subscription_plan`;
+  const quotationQuery = `select  * from subscription_plan where status = ?`;
   try {
-    const [get_data] = await pool.query(quotationQuery)
+    const [get_data] = await pool.query(quotationQuery,[true])
     return { success: true, message: "Fetched Successfully", data: get_data }
   } catch (error) {
     console.log(error, 'errr');

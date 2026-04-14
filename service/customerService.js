@@ -108,7 +108,8 @@ export const GetCustomerByIdService = async (company_id, customer_id) => {
     'packing_id',pl1.packing_id, 
     'noc_id',nl1.noc_id, 
     'receipt_id',mr1.receipt_id, 
-    'lr_id',lr1.lr_id
+    'lr_id',lr1.lr_id,
+    'invoice_bill_id',ib1.invoice_bill_id
     ) as list,
     JSON_OBJECT(
         'customer_id', c1.customer_id,
@@ -139,6 +140,8 @@ export const GetCustomerByIdService = async (company_id, customer_id) => {
     q1.customer_id = c1.customer_id
     left join survey_list as sl1 ON
     sl1.customer_id = c1.customer_id
+    left join invoice_bill as ib1 ON
+    ib1.customer_id = c1.customer_id
     WHERE  c1.company_id = ? AND  c1.customer_status = ? And c1.customer_id=?;
   `;
   try {

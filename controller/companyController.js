@@ -1,5 +1,5 @@
 import { v4 as UUID } from "uuid"
-import { AddStaffService, CreateOrderOrderService, GetCompanyDashboardService, GetCompanyService, GetCompanyStaffService, UpdateCompanyService, VerifyOrderOrderService } from "../service/companyService.js";
+import { AddStaffService, BuyPurchaseOrderService, CreateOrderService, FailedOrderService, FailedPurchaseOrderService, GetCompanyDashboardService, GetCompanyService, GetCompanyStaffService, UpdateCompanyService, VerifyOrderService, VerifyPurchaseOrderService } from "../service/companyService.js";
 import { RazorPay } from "../utils/razorpay.js";
 import crypto from 'crypto'
 export const UpdateCompanyController = async (req, res, next) => {
@@ -96,32 +96,104 @@ export const CreateOrderStaffController = async (req, res, next) => {
         const { data } = req.body
         const { company_id } = req.user
         const order = await RazorPay.orders.create({
-            amount: parseInt(data?.amount) * 100,
+            amount: parseInt(data?.subscription_amount) * 100,
             currency: "INR",
             receipt: "Subscription"
         })
-        const order_data = await CreateOrderOrderService(data, company_id, order)
+        let subscription_start = new Date();
+
+        let subscription_end = new Date(subscription_start);
+        subscription_end.setDate(subscription_end.getDate() + Number(data.days));
+
+        const formatDate = (date) =>
+            date.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+
+        const start_date = formatDate(subscription_start);
+        const end_date = formatDate(subscription_end);
+
+        console.log(start_date, end_date);
+
+
+        const order_data = await CreateOrderService(data, company_id, order,start_date,end_date)
         res.send(order_data)
     } catch (error) {
-        // console.log(error, 'kjkdj');
+        console.log(error, 'kjkdj');
         next(error.message)
     }
 }
 
 export const VerifyOrderStaffController = async (req, res, next) => {
     try {
-        const { data } = req.body
-        const { company_id } = req.user
-        const body = data.razorpay_order_id + "|" + data.razorpay_payment_id;
-    
+        const { data } = req.body;
+        const { company_id } = req.user;
+
+        console.log(data);
+        const body = data?.order_id + "|" + data?.payment_id;
         const generated_signature = crypto
             .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-            .update(body)
+            .update(body.toString())
             .digest("hex");
-        const order_data = await VerifyOrderOrderService(data, company_id, order)
+
+        console.log("Generated:", generated_signature);
+        console.log("Received :", data.signature);
+
+        if (generated_signature === data.signature) {
+            const order_data = await VerifyOrderService(data, company_id);
+            return res.status(200).json(order_data);
+        } else {
+            await FailedOrderService(data)
+            return res.status(400).json({ success: false, message: "Invalid signature" });
+        }
+    } catch (error) {
+        console.log(error);
+        
+        next(error);
+    }
+};
+
+export const BuyStaffOrderStaffController = async (req, res, next) => {
+    try {
+        const { data } = req.body
+        const { company_id } = req.user
+        const order = await RazorPay.orders.create({
+            amount: parseInt(data?.price) * 100,
+            currency: "INR",
+            receipt: "staff purchase"
+        })
+        
+        const order_data = await BuyPurchaseOrderService(data, company_id, order)
         res.send(order_data)
     } catch (error) {
-        // console.log(error, 'kjkdj');
+        console.log(error, 'kjkdj');
         next(error.message)
     }
 }
+
+export const VerifyPurchaseOrderStaffController = async (req, res, next) => {
+    try {
+        const { data } = req.body;
+        const { company_id } = req.user;
+
+        console.log(data);
+        const body = data?.order_id + "|" + data?.payment_id;
+        const generated_signature = crypto
+            .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+            .update(body.toString())
+            .digest("hex");
+
+        console.log("Generated:", generated_signature);
+        console.log("Received :", data.signature);
+
+        if (generated_signature === data.signature) {
+            const order_data = await VerifyPurchaseOrderService(data, company_id);
+            return res.status(200).json(order_data);
+        } else {
+            await FailedPurchaseOrderService(data)
+            return res.status(400).json({ success: false, message: "Invalid signature" });
+        }
+    } catch (error) {
+        console.log(error);
+        
+        next(error);
+    }
+};

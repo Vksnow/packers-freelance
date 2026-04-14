@@ -54,7 +54,7 @@ export const GetCustomerByIdController = async (req, res, next) => {
         const { company_id } = req.user
         const {data}= req.body
         const customer_data = await GetCustomerByIdService(company_id,data.customer_id)
-
+        
         console.log(customer_data, 'cisjn');
 
         res.send(customer_data)

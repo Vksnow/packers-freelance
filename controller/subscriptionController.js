@@ -1,5 +1,4 @@
 import { v4 as UUID } from "uuid"
-import { AddStaffService, GetCompanyDashboardService, GetCompanyService, GetCompanyStaffService, UpdateCompanyService } from "../service/companyService.js";
 import { AddSubscriptionService, DeleteSubscriptionService, GetSubscriptionService, updateSubscriptionService } from "../service/subscriptionService.js";
 
 
@@ -31,10 +30,8 @@ export const GetSubscriptionController = async (req, res, next) => {
 export const updateSubscriptionController = async (req, res, next) => {
     try {
         const { data } = req.body
-        const allowedField = ["subscription_amount","supscription_type"];
+        const allowedField = ["subscription_amount","supscription_type","status"];
 
-        console.log(data,'faga');
-        
         const fields = Object.keys(data).filter(field => allowedField.includes(field))
         const values = fields.map(field => data[field])
         const subscription_id = data.subscription_id
@@ -59,3 +56,5 @@ export const DeleteSubscriptionController = async (req, res, next) => {
         next(error.message)
     }
 }
+
+
