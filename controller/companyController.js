@@ -3,13 +3,27 @@ import { AddStaffService, BuyPurchaseOrderService, CreateOrderService, FailedOrd
 import { RazorPay } from "../utils/razorpay.js";
 import crypto from 'crypto'
 export const UpdateCompanyController = async (req, res, next) => {
-    const { data = {} } = req.body
+
+    let { data = {} } = req.body;
+
+    // ✅ parse if string (VERY IMPORTANT)
+    if (typeof data === "string") {
+        try {
+            data = JSON.parse(data);
+        } catch (e) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid JSON format in data"
+            });
+        }
+    }
     const logo = req.files?.logo?.[0];
     const signature = req.files?.signature?.[0];
     const qr_code_1 = req.files?.qr_code_1?.[0];
     const qr_code_2 = req.files?.qr_code_2?.[0];
 
     try {
+        console.log(data, logo, signature, qr_code_1, qr_code_2, 'dataaa');
         const allowedField = ["company_name", "user_email", "user_name",
             "tagline", "website", "whatsapp", "contact1", "contact2", "gst", "pan",
             "address", "state", "city", "jurisdiction",
@@ -17,7 +31,6 @@ export const UpdateCompanyController = async (req, res, next) => {
             "upi_id_1", "upi_id_2", "upi_mobile", "qr_beneficiary_name",
             "logo", "signature", "qr_code_1", "qr_code_2",
         ];
-
 
         const fields = Object.keys(data).filter(field => allowedField.includes(field))
         if (logo) fields.push("logo");
@@ -34,6 +47,8 @@ export const UpdateCompanyController = async (req, res, next) => {
             }
         });
         const { company_id } = req.user
+
+        console.log(fields, values, company_id, 'controller');
         const company_data = await UpdateCompanyService(fields, values, company_id)
 
         return res.status(200).send(company_data)
@@ -114,7 +129,7 @@ export const CreateOrderStaffController = async (req, res, next) => {
         console.log(start_date, end_date);
 
 
-        const order_data = await CreateOrderService(data, company_id, order,start_date,end_date)
+        const order_data = await CreateOrderService(data, company_id, order, start_date, end_date)
         res.send(order_data)
     } catch (error) {
         console.log(error, 'kjkdj');
@@ -146,7 +161,7 @@ export const VerifyOrderStaffController = async (req, res, next) => {
         }
     } catch (error) {
         console.log(error);
-        
+
         next(error);
     }
 };
@@ -160,7 +175,7 @@ export const BuyStaffOrderStaffController = async (req, res, next) => {
             currency: "INR",
             receipt: "staff purchase"
         })
-        
+
         const order_data = await BuyPurchaseOrderService(data, company_id, order)
         res.send(order_data)
     } catch (error) {
@@ -193,7 +208,7 @@ export const VerifyPurchaseOrderStaffController = async (req, res, next) => {
         }
     } catch (error) {
         console.log(error);
-        
+
         next(error);
     }
 };

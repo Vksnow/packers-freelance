@@ -11,7 +11,7 @@ export const AddCustomerService = async (data, customer_id, creation_type = "web
         FROM customer
         WHERE party_ph = ?
           AND company_id = ?
-          AND customer_status = 1 )`;
+          AND customer_status = 1 AND active_status = 1 )`;
   const values = [
     customer_id, data.party_name,
     data.party_ph, data.email, data.mf_city, data.mt_city, data.shift_date, creation_type, company_id, data.shift_time, staff_id, data.party_ph, company_id,
@@ -29,12 +29,14 @@ export const AddCustomerService = async (data, customer_id, creation_type = "web
     return { message: "Internal Server Error", success: false, error: error }
   }
 }
+
 export const GetCustomerService = async (
   company_id,
   limit = 5,
   page = 1,
   searchText = "",
-  staff_id
+  staff_id,
+  status="active"
 ) => {
 
   const offset = (page - 1) * limit;
@@ -45,6 +47,7 @@ export const GetCustomerService = async (
     FROM customer
     WHERE company_id = ? 
     AND customer_status = ?
+    AND status = ?
     AND LOWER(party_name) LIKE ?
   `;
 
@@ -53,11 +56,12 @@ export const GetCustomerService = async (
     FROM customer  
     WHERE company_id = ? 
     AND customer_status = ?
+    AND status = ?
     AND LOWER(party_name) LIKE ?
   `;
 
-  let countValues = [company_id, true, search];
-  let dataValues = [company_id, true, search];
+  let countValues = [company_id, true,status, search];
+  let dataValues = [company_id, true,status, search];
 
   if (staff_id) {
     countQuery += ` AND created_by = ?`;
